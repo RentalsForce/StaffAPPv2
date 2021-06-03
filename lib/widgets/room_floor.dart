@@ -18,7 +18,6 @@ class RoomFloor extends StatelessWidget {
         Text(
           'Room #22 ',
           style: TextStyle(
-            color: Colors.black,
             fontSize: 18,
           ),
         ),
@@ -28,7 +27,6 @@ class RoomFloor extends StatelessWidget {
         Text(
           'Right Wing',
           style: TextStyle(
-            color: PColors.greyTextColor,
             fontSize: 15,
           ),
         ),

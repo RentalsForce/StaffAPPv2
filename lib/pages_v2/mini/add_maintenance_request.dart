@@ -1,4 +1,5 @@
 import 'package:bn_staff/core/colors.dart';
+import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/button_close.dart';
 import 'package:bn_staff/widgets/elevated_button.dart';
 import 'package:bn_staff/widgets/mini_card.dart';
@@ -27,8 +28,7 @@ class AddMaintenanceRequest extends StatelessWidget {
             SizedBox(
               height: 16,
             ),
-
-            if (2 == 1) ... [
+            if (2 == 1) ...[
               Text(
                 'Add Issues would appear here',
                 style: TextStyle(color: PColors.greyTextColor, fontSize: 16),
@@ -37,7 +37,6 @@ class AddMaintenanceRequest extends StatelessWidget {
                 height: 16,
               ),
             ],
-
             Wrap(
               spacing: 8.0, // gap between adjacent chips
               runSpacing: 4.0,
@@ -62,14 +61,28 @@ class AddMaintenanceRequest extends StatelessWidget {
             FormBuilderDropdown(
               name: 'gender',
               // initialValue: 'Male',
+              dropdownColor: ShortMethods.giveColor(
+                  context, Colors.white, Colors.black),
               allowClear: true,
-              hint: Text('Select Maintenance Issue'),
+              hint: Text(
+                'Select Maintenance Issue',
+                style: TextStyle(
+                  color: ShortMethods.giveColor(
+                      context, Colors.black, Colors.white),
+                ),
+              ),
               validator: FormBuilderValidators.compose(
                   [FormBuilderValidators.required(context)]),
               items: ['Broken Light Bulb', 'New Tissues']
                   .map((gender) => DropdownMenuItem(
                         value: gender,
-                        child: Text('$gender'),
+                        child: Text(
+                          '$gender',
+                          style: TextStyle(
+                            color: ShortMethods.giveColor(
+                                context, Colors.black, Colors.white),
+                          ),
+                        ),
                       ))
                   .toList(),
             ),
@@ -83,29 +96,30 @@ class AddMaintenanceRequest extends StatelessWidget {
             TextField(
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              style: TextStyle(
+                color:
+                    ShortMethods.giveColor(context, Colors.black, Colors.white),
+              ),
             ),
             SizedBox(
               height: 8,
             ),
             PElevatedButton(
               text: 'Add Issue',
-              onPressed: (){
-
-              },
+              onPressed: () {},
               color: Color.fromRGBO(67, 128, 177, 1),
 //background: rgba(67, 128, 177, 1);
             ),
-            SizedBox(height: 28,),
+            SizedBox(
+              height: 28,
+            ),
             PElevatedButton(
               text: 'Save',
-              onPressed: (){
-
+              onPressed: () {
                 Navigator.pop(context);
-
               },
 //background: rgba(67, 128, 177, 1);
             ),
-
           ],
         ),
       ),
@@ -116,7 +130,6 @@ class AddMaintenanceRequest extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: Colors.black,
         fontSize: 16,
       ),
     );

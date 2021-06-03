@@ -79,8 +79,8 @@ ThemeData getAppThemeDark(BuildContext context) {
     iconTheme: IconThemeData(color: Colors.black),
     scaffoldBackgroundColor: Color.fromRGBO(30, 30, 30, 1),
     primaryColor: PColors.black,
-    //accentColor: PColors.blue,
-    primarySwatch: Colors.blue,
+    accentColor: PColors.blue,
+    primarySwatch: Colors.blueGrey,
     primaryColorBrightness: Brightness.dark,
     accentColorBrightness: Brightness.dark,
     fontFamily: 'Roboto',
@@ -97,6 +97,22 @@ ThemeData getAppThemeDark(BuildContext context) {
     ),
 
     inputDecorationTheme: InputDecorationTheme(
+      fillColor: PColors.text_field_background_dark,
+      filled: true,
+      hintStyle: TextStyle(
+        color: PColors.text_colorDart,
+      ),
+      border: inputBorder,
+      focusedBorder: inputBorder,
+      enabledBorder: inputBorder,
+      focusColor: Colors.black12,
+      labelStyle: TextStyle(
+        color: PColors.grayColorForDark,
+      ),
+    ),
+
+    /*
+    inputDecorationTheme: InputDecorationTheme(
       fillColor: Colors.white,
       filled: true,
       hintStyle: TextStyle(
@@ -107,6 +123,9 @@ ThemeData getAppThemeDark(BuildContext context) {
       enabledBorder: inputBorder,
       focusColor: Colors.white,
     ),
+    */
+
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

@@ -1,6 +1,7 @@
 import 'package:bn_staff/core/colors.dart';
 import 'package:bn_staff/model/room.dart';
 import 'package:bn_staff/util/dialog_utils.dart';
+import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/image_control.dart';
 import 'package:bn_staff/widgets/ink_well.dart';
 import 'package:bn_staff/widgets/status.dart';
@@ -20,6 +21,7 @@ class CustomRoomDetail extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
+            color: ShortMethods.giveColor(context , Colors.black , Colors.white),
           ),
         ),
       ),
@@ -127,9 +129,11 @@ class ListItem extends StatelessWidget {
           title: Text(
             this.title,
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 17, color: Colors.black),
+            style: TextStyle(fontSize: 17, color: ShortMethods.giveColor(context , Colors.black , Colors.white)),
           ),
-          trailing: Icon(Icons.navigate_next),
+          trailing: Icon(Icons.navigate_next ,
+          color: ShortMethods.giveColor(context , Colors.black , Colors.white),
+          ),
         ),
       ),
     );

@@ -1,9 +1,10 @@
+import 'package:bn_staff/pages/home.dart';
+import 'package:bn_staff/pages/initial_loader.dart';
 import 'package:bn_staff/pages_v2/tasks_home.dart';
 import 'package:bn_staff/util/custom_amination.dart';
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'dart:math' as math;
 
 void main() {
   configLoading();

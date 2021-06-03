@@ -3,6 +3,7 @@ import 'package:bn_staff/core/constants.dart';
 import 'package:bn_staff/model/room.dart';
 import 'package:bn_staff/pages/report_add_info.dart';
 import 'package:bn_staff/util/dio.dart';
+import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/p_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -200,30 +201,33 @@ class LinkedLabelRadio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: Row(
-        children: <Widget>[
-          Radio<bool>(
-              groupValue: groupValue,
-              value: value,
-              onChanged: (bool newValue) {
-                onChanged(newValue);
-              }),
-          RichText(
-            text: TextSpan(
-              text: label,
-              style: const TextStyle(
-                color: PColors.lightBlack,
-                fontSize: 16, //background: rgba(79, 85, 102, 1);
+    return Container(
+      child: Padding(
+        padding: padding,
+        child: Row(
+          children: <Widget>[
+            Radio<bool>(
+              fillColor: MaterialStateColor.resolveWith((states) => PColors.blue),
+                groupValue: groupValue,
+                value: value,
+                onChanged: (bool newValue) {
+                  onChanged(newValue);
+                },),
+            RichText(
+              text: TextSpan(
+                text: label,
+                style:  TextStyle(
+                  color: ShortMethods.giveColor(context, PColors.gray, PColors.grayColorForDark) ,
+                  fontSize: 16, //background: rgba(79, 85, 102, 1);
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    this.onChanged(!value);
+                  },
               ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  this.onChanged(!value);
-                },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

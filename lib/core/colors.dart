@@ -7,6 +7,10 @@ class PColors {
   static const text_colorDart = const Color.fromRGBO(255, 255, 255, 1.0);
 
   static const text_error_color = const Color.fromRGBO(255, 51, 51, 1.0);
+  static const text_field_background_dark = const Color.fromRGBO(58, 58, 60, 1.0);
+
+  static const text_field_background = const Color.fromRGBO(246, 246, 246, 1.0);
+
 
 
   static const black = const Color.fromRGBO(0, 0, 0, 1);
@@ -19,6 +23,7 @@ class PColors {
   //background: rgba(255, 68, 51, 1);
 
   static const gray = const Color.fromRGBO(128, 138, 166, 1);
+  static const grayColorForDark = const Color.fromRGBO(180, 180, 180, 1);
   static const lightBlack = Color.fromRGBO(79, 85, 102, 1);
 
   static const lightGray =  Color.fromRGBO(196, 196, 196, 1);

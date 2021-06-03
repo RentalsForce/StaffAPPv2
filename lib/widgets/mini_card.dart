@@ -20,13 +20,14 @@ class MiniCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(24.0),
         decoration: BoxDecoration(
-          color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue : Colors.white,
+          color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Color.fromRGBO(30, 30, 30, 1) : Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0),
           ),
         ),
-        child: this.child,
+        child: Container(
+            child: this.child),
       ),
     );
   }

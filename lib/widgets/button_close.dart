@@ -1,4 +1,5 @@
 import 'package:bn_staff/core/colors.dart';
+import 'package:bn_staff/util/short_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -22,8 +23,13 @@ class ButtonClose extends StatelessWidget {
           children: [
             Padding(
               padding:
-                  const EdgeInsets.only(left: 8, right: 32, top: 8, bottom: 8),
-              child: Text(this.name),
+                   EdgeInsets.only(left: 8, right: 32, top: 8, bottom: 8),
+              child: Text(this.name ,
+              style: TextStyle(
+                color: ShortMethods.giveColor(
+                    context, Colors.white, Colors.black)
+              ),
+              ),
             ),
             GestureDetector(
               onTap: this.onTap,

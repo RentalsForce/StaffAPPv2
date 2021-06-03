@@ -60,7 +60,7 @@ class _LoginViewState extends State<LoginView> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   'Please, fill the below information to Log in',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
               SizedBox(
@@ -71,32 +71,16 @@ class _LoginViewState extends State<LoginView> {
                   InputView(
                     controller: this.controllerEmail,
                     showError: this.errorEmail,
-                    icon: Icons.mail_outline,
-                    errorText: 'Enter valid username',
-                    label: 'Username',
-                    detailLabel: 'Please Enter username',
-                    textInputType: TextInputType.emailAddress,
-                    formValidations: FormBuilderValidators.compose(
-                      [
-                        FormBuilderValidators.required(context),
-                      ],
-                    ),
+                    placeHolder: 'Please Enter username',
+                    isSecure: false,
+
                   ),
                   InputView(
-                    isPassword: true,
-                    controller: controllerPassword,
+                    controller: this.controllerPassword,
                     showError: this.errorPassword,
-                    icon: Icons.lock_outline,
-                    errorText: 'Please enter valid password',
-                    label: 'Password',
-                    detailLabel: 'Please Enter your password',
-                    textInputType: TextInputType.emailAddress,
-                    formValidations: FormBuilderValidators.compose(
-                      [
-                        FormBuilderValidators.required(context),
-                      ],
-                    ),
+                    placeHolder: 'Please Enter your password',
                     isSecure: true,
+
                   ),
                   Row(children: <Widget>[
                     SizedBox(
@@ -117,18 +101,7 @@ class _LoginViewState extends State<LoginView> {
                       },
                     ),
                   ]),
-                  if (showCompany) ...[
-                    InputView(
-                      label: 'Company Url',
-                      detailLabel: 'Please Enter your company url',
-                      textInputType: TextInputType.emailAddress,
-                      formValidations: FormBuilderValidators.compose(
-                        [
-                          FormBuilderValidators.required(context),
-                        ],
-                      ),
-                    ),
-                  ],
+
                 ],
               ),
               Padding(
