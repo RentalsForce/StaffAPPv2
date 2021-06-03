@@ -78,7 +78,7 @@ Future<void> showBottomSheit(BuildContext context, Widget widget) {
   showModalBottomSheet(
     barrierColor: MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.grey.withOpacity(0.5)
-        : Color(0xff757575),
+        : Colors.black.withOpacity(0.5),
     context: context,
     isScrollControlled: true,
     builder: (context) => SingleChildScrollView(

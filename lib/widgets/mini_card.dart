@@ -12,10 +12,7 @@ class MiniCard extends StatelessWidget {
     return Container(
 
       height: MediaQuery.of(context).size.height / 1.4,
-      color: MediaQuery.of(context).platformBrightness ==
-          Brightness.dark
-          ? Colors.white
-          : Color(0xff757575).withOpacity(0.5),
+      color:  Colors.transparent,
 
       child: Container(
         padding: EdgeInsets.all(24.0),

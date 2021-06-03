@@ -11,7 +11,7 @@ ThemeData getAppTheme(BuildContext context) {
   return ThemeData(
     cardColor: Colors.white,
     iconTheme: IconThemeData(color: Colors.black),
-
+    canvasColor: Colors.transparent,
     scaffoldBackgroundColor: Color.fromRGBO(253, 253, 253, 1),
     primaryColor: PColors.black,
     accentColor: PColors.blue,
@@ -75,6 +75,8 @@ ThemeData getAppThemeDark(BuildContext context) {
     ),
   );
   return ThemeData(
+    canvasColor: Colors.transparent,
+
     cardColor: Color.fromRGBO(50, 50, 50, 1),
     iconTheme: IconThemeData(color: Colors.black),
     scaffoldBackgroundColor: Color.fromRGBO(30, 30, 30, 1),
