@@ -95,13 +95,12 @@ class CustomRoomDetail extends StatelessWidget {
                       showBottomSheit(context, AddMaintenanceRequest());
                     },
                   ),
-                  ListItem(
-                    title: 'Some other Function',
-                    onTap: () {},
-                  ),
+
                   ListItem(
                     title: 'Add Maintenance Request ',
-                    onTap: () {},
+                    onTap: () {
+                      showBottomSheit(context, AddMaintenanceRequest());
+                    },
                   ),
                 ],
               )

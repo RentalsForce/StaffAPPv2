@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
       darkTheme: getAppThemeDark(context),
       builder: EasyLoading.init(),
       home: TasksHome(),
+   // home: Home(),
     );
   }
 }
