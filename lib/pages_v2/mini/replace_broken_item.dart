@@ -12,12 +12,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class AddMaintenanceRequest extends StatefulWidget {
+import 'package:flutter/material.dart';
+
+import 'add_maintenance_request.dart';
+
+class ReplaceBrokenItem extends StatefulWidget {
   @override
-  _AddMaintenanceRequestState createState() => _AddMaintenanceRequestState();
+  _ReplaceBrokenItemState createState() => _ReplaceBrokenItemState();
 }
 
-class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
+class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
   int selectedIndex = 0;
   String customIssue;
 
@@ -51,6 +55,7 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
   }
 
   TextEditingController _controller = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +70,7 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
             Align(
               alignment: Alignment.center,
               child: MiniHeaderText(
-                text: 'Add Maintenance Request',
+                text: 'Replace Broken Item',
               ),
             ),
             SizedBox(
@@ -127,42 +132,23 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
             SizedBox(
               height: 16,
             ),
-            buildText('Maintenance Issue'),
+            buildText('Broken Item Name'),
             SizedBox(
               height: 8,
             ),
-            FormBuilderDropdown(
-              name: 'gender',
-              // initialValue: 'Male',
-              dropdownColor:
-                  ShortMethods.giveColor(context, Colors.white, Colors.black),
-              allowClear: true,
-              hint: Text(
-                'Select Maintenance Issue',
-                style: TextStyle(
-                  color: ShortMethods.giveColor(
-                      context, Colors.black, Colors.white),
-                ),
+            TextField(
+              controller: _nameController,
+              keyboardType: TextInputType.multiline,
+              maxLines: 1,
+              style: TextStyle(
+                color:
+                ShortMethods.giveColor(context, Colors.black, Colors.white),
               ),
-              validator: FormBuilderValidators.compose(
-                  [FormBuilderValidators.required(context)]),
-              items: ['Broken Light Bulb', 'New Tissues']
-                  .map((gender) => DropdownMenuItem(
-                        value: gender,
-                        child: Text(
-                          '$gender',
-                          style: TextStyle(
-                            color: ShortMethods.giveColor(
-                                context, Colors.black, Colors.white),
-                          ),
-                        ),
-                      ))
-                  .toList(),
             ),
             SizedBox(
               height: 8,
             ),
-            buildText('Custom Issue'),
+            buildText('Description of Damage'),
             SizedBox(
               height: 8,
             ),
@@ -172,7 +158,7 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
               maxLines: null,
               style: TextStyle(
                 color:
-                    ShortMethods.giveColor(context, Colors.black, Colors.white),
+                ShortMethods.giveColor(context, Colors.black, Colors.white),
               ),
             ),
             SizedBox(
@@ -238,7 +224,7 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
               height: 16,
             ),
             PElevatedButton(
-              text: 'Add Issue',
+              text: 'Add Damage Item',
               onPressed: () {
                 FocusManager.instance.primaryFocus.unfocus();
 
@@ -278,44 +264,5 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
   }
 }
 
-class CustomTextButton extends StatelessWidget {
-  final String text;
-  final IconData icon;
-  final VoidCallback onTap;
 
-  const CustomTextButton({
-    Key key,
-    this.text,
-    this.icon,
-    this.onTap,
-  }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return PInkWell(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                ? PColors.text_field_background_dark
-                : PColors.text_field_background,
-            border: Border.all(color: Colors.grey)),
-        height: 60,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-            ),
-            SizedBox(
-              height: 2,
-            ),
-            Text(text),
-          ],
-        ),
-      ),
-    );
-  }
-}
