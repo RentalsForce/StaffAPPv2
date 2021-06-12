@@ -83,6 +83,7 @@ Future<void> showBottomSheit(BuildContext context, Widget widget) {
     isScrollControlled: true,
     builder: (context) => SingleChildScrollView(
       child: Container(
+        color: Colors.transparent,
         padding:
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: widget,

@@ -11,7 +11,7 @@ class MiniCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
 
-      height: MediaQuery.of(context).size.height / 1.4,
+      height: MediaQuery.of(context).size.height / 1.3,
       color:  Colors.transparent,
 
       child: Container(

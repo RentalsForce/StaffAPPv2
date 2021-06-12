@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import 'mini/add_maintenance_request.dart';
 import 'mini/change_room_status.dart';
+import 'mini/replace_broken_item.dart';
 
 class CustomRoomDetail extends StatelessWidget {
   @override
@@ -92,16 +93,15 @@ class CustomRoomDetail extends StatelessWidget {
                   ListItem(
                     title: 'Replace Broken Item',
                     onTap: () {
-                      showBottomSheit(context, AddMaintenanceRequest());
+                      showBottomSheit(context, ReplaceBrokenItem());
                     },
                   ),
-                  ListItem(
-                    title: 'Some other Function',
-                    onTap: () {},
-                  ),
+
                   ListItem(
                     title: 'Add Maintenance Request ',
-                    onTap: () {},
+                    onTap: () {
+                      showBottomSheit(context, AddMaintenanceRequest());
+                    },
                   ),
                 ],
               )
