@@ -19,7 +19,7 @@ class Config {
   static const LOGIN_ENDPOINT = '/services/oauth2/token';
 
   static const SALES_LOGIN_URL = 'https://bn-sfauth.herokuapp.com/api/session';
-
+//https://bn-sfauth.herokuapp.com/api/session?username=bookingninjas.tso2@isvedition.org.syafiq&password=Amikom2010&is_test=true
 //
   //?username=bookingninjas.tso2@isvedition.org.teguh&password=Amikom2010&is_test=true
 

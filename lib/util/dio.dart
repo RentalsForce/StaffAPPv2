@@ -1,9 +1,5 @@
-import 'dart:convert';
-
-import 'package:bn_staff/core/colors.dart';
 import 'package:bn_staff/core/constants.dart';
 import 'package:bn_staff/model/room.dart';
-import 'package:bn_staff/model/user.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +10,23 @@ final Dio _dio = Dio();
 final String _endpoint = Config.BASE_URL;
 
 class LoginApiProvider {
+  Future<Response> getSession(String username, String password, bool isTest,
+      {Function successCallBack, Function failedCallBack}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var url = Config.SALES_LOGIN_URL;
+
+    Response response = await _dio.get(
+      url,
+      queryParameters: {
+        'username': username,
+        'password': password,
+        'is_test': isTest
+      },
+    );
+    return response;
+  }
+
   Future<void> getSalesForceSession(
       String username, String password, bool isTest,
       {Function successCallBack, Function failedCallBack}) async {
@@ -53,11 +66,13 @@ class LoginApiProvider {
 
 class RoomApiProvider {
   Future<void> getRooms(
+
+
       {Function successCallBack(result), Function failedCallBack}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var url =
-          'https://bntso2--teguh.my.salesforce.com/services/data/v51.0/query/?q=select+id,name,status__c,housekeeping_notes__c+from+unit__c';
+          'https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/query/?q=select+id,name,status__c,apartment_floor__c,unit_location__c,room_type_lookup__r.room_class__c+from+unit__c';
 
       var tmp = prefs.getString(Config.SESSION_ID_KEY);
 
@@ -69,7 +84,7 @@ class RoomApiProvider {
 
       print(response.data);
 
-      var rooms = RoomList.fromJson(response.data['records']);
+      var rooms = Hotel.fromJson(response.data['records']);
 
       successCallBack(rooms);
     } catch (error, stacktrace) {

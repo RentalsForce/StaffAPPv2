@@ -157,7 +157,7 @@ class _AllRoomsItemState extends State<AllRoomsItem> {
                         SizedBox(
                           height: 4,
                         ),
-                        Text(this.widget.room.roomType),
+                        Text(this.widget.room.roomType.toString()),
                       ],
                     ),
                   ),

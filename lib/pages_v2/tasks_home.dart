@@ -3,6 +3,7 @@ import 'package:bn_staff/core/constants.dart';
 import 'package:bn_staff/model/room.dart';
 import 'package:bn_staff/util/custom_app_bar.dart';
 import 'package:bn_staff/util/dialog_utils.dart';
+import 'package:bn_staff/util/dio.dart';
 import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/ink_well.dart';
 
@@ -32,10 +33,50 @@ class _TasksHomeState extends State<TasksHome>
 
   bool roomsToClean = true;
   bool allRooms = false;
+  void getData() {
+    RoomApiProvider().getRooms(
+        successCallBack: (result) {
+
+          /*setState(() {
+            //list = result;
+            roomToClean = list.list
+                .where((i) => i.roomStatus != RoomStatus.cleaned)
+                .toList();
+          });
+          setState(() {
+
+            this.foundError = false;
+          });
+
+          EasyLoading.dismiss();
+
+          return;*/
+
+        },
+        failedCallBack: () {
+         // EasyLoading.dismiss();
+
+          //EasyLoading.showToast('Error while loading data');
+
+
+          /*
+          setState(() {
+
+            this.foundError = true;
+          });*/
+
+
+
+        });
+  }
 
   @override
   initState() {
     super.initState();
+
+    this.getData();
+
+
     scrollController.addListener(() {
       if (scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {

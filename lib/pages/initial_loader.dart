@@ -1,6 +1,9 @@
+import 'package:bn_staff/bloc/login/login_bloc.dart';
 import 'package:bn_staff/model/user.dart';
+import 'package:bn_staff/pages_v2/tasks_home.dart';
 import 'package:bn_staff/util/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants.dart';
@@ -20,9 +23,7 @@ class _InitialLoaderState extends State<InitialLoader>
 
   void goToMainScreen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var tmp =  prefs.getString(Config.SESSION_ID_KEY);
-
-
+    var tmp = prefs.getString(Config.SESSION_ID_KEY);
 
     if (tmp == null) {
       goToLogin();
@@ -30,26 +31,28 @@ class _InitialLoaderState extends State<InitialLoader>
       //
       //
 
-      var userName =  prefs.getString(Config.SESSION_USERNAME_KEY);
-      var password =  prefs.getString(Config.SESSION_PASSWORD_KEY);
-      var isText =  prefs.getBool(Config.SESSION_IS_TEST_KEY);
+      var userName = prefs.getString(Config.SESSION_USERNAME_KEY);
+      var password = prefs.getString(Config.SESSION_PASSWORD_KEY);
+      var isText = prefs.getBool(Config.SESSION_IS_TEST_KEY);
 
-
-      LoginApiProvider().getSalesForceSession(userName, password ,isText , successCallBack: (){
+      LoginApiProvider().getSalesForceSession(userName, password, isText,
+          successCallBack: () {
         Future.delayed(const Duration(seconds: 1), () {
-          MutualActions.goToView(Tasks(), context);
+          MutualActions.goToView(TasksHome(), context);
         });
-      },failedCallBack: (){
+      }, failedCallBack: () {
         goToLogin();
-
       });
-
     }
   }
 
   void goToLogin() {
     Future.delayed(const Duration(seconds: 1), () {
-      MutualActions.goToView(LoginView(), context);
+      MutualActions.goToView(
+          BlocProvider(
+              create: (context) => LoginBloc(InitialLoginState()),
+              child: LoginView()),
+          context);
     });
   }
 
@@ -109,13 +112,12 @@ class _InitialLoaderState extends State<InitialLoader>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
               child: Container(
-
                 width: double.infinity,
                 child: Image(
-                  image: AssetImage('asset/images/Groupbub.png' , ),
-                    fit: BoxFit.fill
-
-                ),
+                    image: AssetImage(
+                      'asset/images/Groupbub.png',
+                    ),
+                    fit: BoxFit.fill),
               ),
             ),
             Column(

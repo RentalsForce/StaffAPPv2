@@ -22,7 +22,7 @@ class _TasksState extends State<Tasks> {
 
   bool foundError = false;
 
-  RoomList list;
+  Hotel list;
   List<Room> roomToClean = [];
 
   @override
@@ -42,7 +42,7 @@ class _TasksState extends State<Tasks> {
         successCallBack: (result) {
           setState(() {
             list = result;
-            roomToClean = list.list
+            roomToClean = list.meetingFloor.rooms
                 .where((i) => i.roomStatus != RoomStatus.cleaned)
                 .toList();
           });
@@ -161,7 +161,7 @@ class _TasksState extends State<Tasks> {
     if (list == null) {
       return nullCheckView();
     }
-    if (list.list.length == 0) {
+    if (list.meetingFloor.rooms.length == 0) {
       if (roomToClean.length == 0) {
         return NoTask();
       }

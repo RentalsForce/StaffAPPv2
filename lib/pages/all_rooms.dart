@@ -7,7 +7,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 
 class AllRooms extends StatefulWidget {
-  final RoomList roomList;
+  final Hotel roomList;
 
   final Function() tapped;
 
@@ -22,10 +22,10 @@ class _AllRoomsState extends State<AllRooms> {
   Widget build(BuildContext context) {
     return ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: this.widget.roomList.list.length,
+        itemCount: this.widget.roomList.meetingFloor.rooms.length,
         itemBuilder: (BuildContext context, int index) {
           return AllRoomsItem(
-            room: this.widget.roomList.list[index],
+            room: this.widget.roomList.meetingFloor.rooms[index],
             tapped: (){
               this.widget.tapped();
 
