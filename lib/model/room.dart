@@ -5,10 +5,35 @@ class Floor {
   List<Room> rooms;
   int numberOfRooms;
   int roomsToCleans;
+
+  bool isMeetingFloor;
+
+  String get floorName {
+    if (this.isMeetingFloor) {
+      return 'Meeting Rooms';
+    }
+
+    return this.ordinalAge(this.rooms[0].floorNo) + ' Floor';
+  }
+
+  String ordinalAge(int number) {
+    if (number == 11 || number == 12 || number == 13) {
+      return '${number}th';
+    }
+    if (number % 10 == 1) {
+      return '${number}st';
+    }
+    if (number % 10 == 2) {
+      return '${number}nd';
+    }
+    if (number % 10 == 3) {
+      return '${number}rd';
+    }
+    return '${number}th';
+  }
 }
 
 class Hotel {
-
   int totalRooms;
   int roomToBeCleaned;
   int roomCleaned;
@@ -16,6 +41,14 @@ class Hotel {
 
   List<Floor> floors;
   Floor meetingFloor;
+
+  double get roomCleanedPercent {
+    return this.roomCleaned / totalRooms * 100.0;
+  }
+
+  String get roomCleanPercent {
+    return roomCleanedPercent.round().toString() + '%';
+  }
 
   Hotel.fromJson(List<dynamic> orderList) {
     var hotelList = (orderList as List)
@@ -35,8 +68,10 @@ class Hotel {
         .where((element) => element.roomStatus != RoomStatus.cleaned)
         .length;
 
+    meetingFloor.isMeetingFloor = true;
 
     int numberOfRooms = meetingFloor.numberOfRooms;
+    int numberOfRoomsToBeCleaned = meetingFloor.roomsToCleans;
 
     var distinct = <int>[];
 
@@ -49,23 +84,65 @@ class Hotel {
     }
     floors = [];
 
-
     for (int number in distinct) {
       Floor current = Floor();
-      current.rooms = hotelList.where((element) => element.floorNo == number).toList();
+      current.rooms =
+          hotelList.where((element) => element.floorNo == number).toList();
       current.numberOfRooms = current.rooms.length;
 
       current.roomsToCleans = current.rooms
           .where((element) => element.roomStatus != RoomStatus.cleaned)
           .length;
 
+      current.isMeetingFloor = false;
+
       floors.add(current);
       numberOfRooms += current.numberOfRooms;
 
+      numberOfRoomsToBeCleaned += current.roomsToCleans;
     }
+
+    this.totalRooms = numberOfRooms;
+    this.roomToBeCleaned = numberOfRoomsToBeCleaned;
+    this.roomCleaned = numberOfRooms - numberOfRoomsToBeCleaned;
 
     print('Check');
   }
+
+
+  /*
+  Floor get filteredMeetingFloor {
+    var tmp = this.meetingFloor;
+
+    var c = meetingFloor.rooms
+        .where((e) => e.roomStatus != RoomStatus.cleaned)
+        .toList();
+    tmp.rooms = c;
+
+    return tmp;
+  }
+*/
+  /*
+  List<Floor> get filteredCleanFloor {
+    var copyList = floors.map((v) => v).toList();
+
+    copyList = [];
+
+    for (Floor currentFloor in this.floors) {
+      var tmp = currentFloor;
+
+      var c = currentFloor.rooms
+          .where((e) => e.roomStatus != RoomStatus.cleaned)
+          .toList();
+      tmp.rooms = c;
+
+      copyList.add(tmp);
+    }
+
+    return copyList;
+  }
+  */
+
 
 //  print('');
 
@@ -80,6 +157,28 @@ class Room {
   RoomType roomType;
 
   String wingName;
+
+  String ordinalAge(int number) {
+    if (number == 11 || number == 12 || number == 13) {
+      return '${number}th';
+    }
+    if (number % 10 == 1) {
+      return '${number}st';
+    }
+    if (number % 10 == 2) {
+      return '${number}nd';
+    }
+    if (number % 10 == 3) {
+      return '${number}rd';
+    }
+    return '${number}th';
+  }
+
+  String get floorName {
+
+    return this.ordinalAge(this.floorNo) + ' Floor';
+  }
+
 
   static String roomString(roomStatus) {
     if (roomStatus == RoomStatus.cleaned) {
@@ -141,6 +240,8 @@ class Room {
   }
 
   Room.fromJson(Map<String, dynamic> json) {
+    print(json);
+
     id = json['Id'];
     name = json['Name'];
     if (json['Status__c'] == 'Clean') {
@@ -177,7 +278,7 @@ class ResponseWrapper {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['Status__c'] = this.status;
-    data['Housekeeping_Notes__c'] = housekeepingNotes;
+    //data['Housekeeping_Notes__c'] = housekeepingNotes;
 
     return data;
   }

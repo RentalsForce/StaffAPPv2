@@ -16,7 +16,7 @@ class RoomFloor extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Room #22 ',
+          this.room,
           style: TextStyle(
             fontSize: 18,
           ),
@@ -25,7 +25,7 @@ class RoomFloor extends StatelessWidget {
           height: 8,
         ),
         Text(
-          'Right Wing',
+          wing,
           style: TextStyle(
             fontSize: 15,
           ),

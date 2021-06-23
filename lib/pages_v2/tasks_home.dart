@@ -14,6 +14,7 @@ import 'package:bn_staff/widgets/top_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:expandable/expandable.dart';
 import 'custom_room_detail.dart';
@@ -29,45 +30,41 @@ class _TasksHomeState extends State<TasksHome>
   ScrollController scrollController = new ScrollController();
   bool isVisible = true;
 
-  var _volumeValue = 50.0;
+  Hotel hotel;
 
-  bool roomsToClean = true;
-  bool allRooms = false;
+  bool roomsToClean = false;
+  bool allRooms = true;
+
+  int totalReportedHomes = 0;
+
   void getData() {
+    EasyLoading.show(
+      status: 'loading...',
+    );
+    //getTotalReported
+
+    RoomApiProvider().getTotalReported(successCallBack: (result) {
+      setState(() {
+        this.totalReportedHomes = result;
+      });
+
+      return;
+    });
+
     RoomApiProvider().getRooms(
-        successCallBack: (result) {
+      successCallBack: (result) {
+        setState(() {});
 
-          /*setState(() {
-            //list = result;
-            roomToClean = list.list
-                .where((i) => i.roomStatus != RoomStatus.cleaned)
-                .toList();
-          });
-          setState(() {
+        this.hotel = result;
 
-            this.foundError = false;
-          });
+        EasyLoading.dismiss();
 
-          EasyLoading.dismiss();
-
-          return;*/
-
-        },
-        failedCallBack: () {
-         // EasyLoading.dismiss();
-
-          //EasyLoading.showToast('Error while loading data');
-
-
-          /*
-          setState(() {
-
-            this.foundError = true;
-          });*/
-
-
-
-        });
+        return;
+      },
+      failedCallBack: () {
+        EasyLoading.dismiss();
+      },
+    );
   }
 
   @override
@@ -75,7 +72,6 @@ class _TasksHomeState extends State<TasksHome>
     super.initState();
 
     this.getData();
-
 
     scrollController.addListener(() {
       if (scrollController.position.userScrollDirection ==
@@ -98,203 +94,266 @@ class _TasksHomeState extends State<TasksHome>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar.buildAppBar('Tasks',context),
+      appBar: CustomAppBar.buildAppBar('Tasks', context),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(Config.COMMON_PADDING),
-          child: Column(
-            children: [
-              AnimatedContainer(
-                duration: Duration(milliseconds: 800),
-                width: MediaQuery.of(context).size.width /
-                    Config.HOME_CARD_WIDTH_RATIO,
-                height: isVisible
-                    ? MediaQuery.of(context).size.width /
-                        Config.HOME_CARD_HEIGHT_RATIO
-                    : 0,
-                child: Container(
-                  child: Card(
-                    elevation: 8,
-                    color: PColors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 14,
-                          child: Row(
+          child: this.hotel == null
+              ? Container()
+              : Column(
+                  children: [
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 400),
+                      width: MediaQuery.of(context).size.width /
+                          Config.HOME_CARD_WIDTH_RATIO,
+                      height: isVisible
+                          ? MediaQuery.of(context).size.width /
+                              Config.HOME_CARD_HEIGHT_RATIO
+                          : 0,
+                      child: Container(
+                        child: Card(
+                          elevation: 8,
+                          color: PColors.orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                          child: Column(
                             children: [
                               Expanded(
-                                flex: 11,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 16, left: 20),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Text(
-                                        'Rooms Left To Clean',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      Text(
-                                        '54',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 40,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 5,
-                                child: Stack(
+                                flex: 14,
+                                child: Row(
                                   children: [
-                                    SfRadialGauge(
-                                      axes: <RadialAxis>[
-                                        RadialAxis(
-                                          minimum: 0,
-                                          maximum: 100,
-                                          startAngle: 270,
-                                          endAngle: 270,
-                                          showLabels: false,
-                                          showTicks: false,
-                                          radiusFactor: 0.6,
-                                          axisLineStyle: AxisLineStyle(
-                                              cornerStyle: CornerStyle.bothFlat,
-                                              color: Colors.black12,
-                                              thickness: 6),
-                                          pointers: <GaugePointer>[
-                                            RangePointer(
-                                              value: _volumeValue,
-                                              cornerStyle: CornerStyle.bothFlat,
-                                              width: 6,
-                                              sizeUnit:
-                                                  GaugeSizeUnit.logicalPixel,
-                                              color: PColors.backgroundColor,
+                                    Expanded(
+                                      flex: 11,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 16, left: 20),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: [
+                                            Text(
+                                              'Rooms Left To Clean',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Text(
+                                              this
+                                                  .hotel
+                                                  .roomToBeCleaned
+                                                  .toString(),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 40,
+                                              ),
                                             ),
                                           ],
-                                        )
-                                      ],
-                                    ),
-                                    Center(
-                                      child: Text(
-                                        '18%',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w700,
                                         ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 5,
+                                      child: Stack(
+                                        children: [
+                                          SfRadialGauge(
+                                            axes: <RadialAxis>[
+                                              RadialAxis(
+                                                minimum: 0,
+                                                maximum: 100,
+                                                startAngle: 270,
+                                                endAngle: 270,
+                                                showLabels: false,
+                                                showTicks: false,
+                                                radiusFactor: 0.8,
+                                                axisLineStyle: AxisLineStyle(
+                                                    cornerStyle:
+                                                        CornerStyle.bothFlat,
+                                                    color: Colors.black12,
+                                                    thickness: 6),
+                                                pointers: <GaugePointer>[
+                                                  RangePointer(
+                                                    value: this
+                                                        .hotel
+                                                        .roomCleanedPercent,
+                                                    cornerStyle:
+                                                        CornerStyle.bothFlat,
+                                                    width: 6,
+                                                    sizeUnit: GaugeSizeUnit
+                                                        .logicalPixel,
+                                                    color:
+                                                        PColors.backgroundColor,
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          Center(
+                                            child: Text(
+                                              this.hotel.roomCleanPercent,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
+                              Expanded(
+                                flex: 9,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8),
+                                  child: Container(
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: MiniCardInfo(
+                                            label: 'Rooms Cleaned',
+                                            count: this.hotel.roomCleaned,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: MiniCardInfo(
+                                            label: 'Total Rooms',
+                                            count: this.hotel.totalRooms,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: this.totalReportedHomes == 0
+                                              ? Container()
+                                              : MiniCardInfo(
+                                                  label: 'Reported',
+                                                  count:
+                                                      this.totalReportedHomes,
+                                                ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: isVisible,
+                      child: SizedBox(
+                        height: 16,
+                      ),
+                    ),
+                    Row(
+                      children: [
                         Expanded(
-                          flex: 9,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Container(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: MiniCardInfo(
-                                      label: 'Rooms Cleaned',
-                                      count: 12,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: MiniCardInfo(
-                                      label: 'Total Rooms',
-                                      count: 66,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: MiniCardInfo(
-                                      label: 'Reported',
-                                      count: 1,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          child: TopButton(
+                            text:
+                                'Rooms to Clean(${this.hotel.roomToBeCleaned})',
+                            isSelected: roomsToClean,
+                            onTap: () {
+                              setState(() {
+                                if (roomsToClean == false) {
+                                  this.roomsToClean = true;
+                                  this.allRooms = false;
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          child: TopButton(
+                            text: 'All Rooms(${this.hotel.totalRooms})',
+                            isSelected: allRooms,
+                            onTap: () {
+                              setState(() {
+                                if (allRooms == false) {
+                                  this.roomsToClean = false;
+                                  this.allRooms = true;
+                                }
+                              });
+                            },
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: isVisible,
-                child: SizedBox(
-                  height: 16,
-                ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TopButton(
-                      text: 'Rooms to Clean(54)',
-                      isSelected: roomsToClean,
-                      onTap: () {
-                        setState(() {
-                          if (roomsToClean == false) {
-                            this.roomsToClean = true;
-                            this.allRooms = false;
-                          }
-                        });
-                      },
+                    SizedBox(
+                      height: 16,
                     ),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Expanded(
-                    child: TopButton(
-                      text: 'All Rooms(66)',
-                      isSelected: allRooms,
-                      onTap: () {
-                        setState(() {
-                          if (allRooms == false) {
-                            this.roomsToClean = false;
-                            this.allRooms = true;
+                    Expanded(
+                      child: ListView.separated(
+                        controller: scrollController,
+                        itemCount: this.hotel.floors.length + 1,
+                        separatorBuilder: (BuildContext context, int index) =>
+                            Container(
+                          height: 20,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          if (roomsToClean) {
+                            if (this.hotel.floors.length == index) {
+                              if (this
+                                      .hotel
+                                      .meetingFloor
+                                      .rooms
+                                      .where((e) =>
+                                          e.roomStatus != RoomStatus.cleaned)
+                                      .length ==
+                                  0) {
+                                return Container();
+                              }
+
+                              return Card1(
+                                currentFloor: hotel.meetingFloor,
+                                isMeetingRoom: true,
+                                isCleanFilter: true,
+                                reloadData: getData,
+                              );
+                            }
+
+                            if (this
+                                    .hotel
+                                    .floors[index]
+                                    .rooms
+                                    .where((e) =>
+                                        e.roomStatus != RoomStatus.cleaned)
+                                    .toList()
+                                    .length ==
+                                0) {
+                              return Container();
+                            }
+                            return Card1(
+                              currentFloor: this.hotel.floors[index],
+                              isCleanFilter: true,
+                              reloadData: getData,
+                            );
                           }
-                        });
-                      },
+
+                          if (this.hotel.floors.length == index) {
+                            return Card1(
+                              currentFloor: this.hotel.meetingFloor,
+                              isMeetingRoom: true,
+                              reloadData: getData,
+                            );
+                          }
+                          return Card1(
+                            currentFloor: this.hotel.floors[index],
+                            reloadData: getData,
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Expanded(
-                child: ListView.separated(
-                  controller: scrollController,
-                  itemCount: 25,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      Container(
-                    height: 20,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card1();
-                  },
+                    SizedBox(
+                      height: 24,
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(
-                height: 24,
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -335,6 +394,17 @@ class MiniCardInfo extends StatelessWidget {
 }
 
 class Card1 extends StatelessWidget {
+  bool isMeetingRoom;
+  Floor currentFloor;
+  bool isCleanFilter;
+  VoidCallback reloadData;
+
+  Card1(
+      {this.currentFloor,
+      this.isMeetingRoom = false,
+      this.isCleanFilter = false,
+      this.reloadData});
+
   @override
   Widget build(BuildContext context) {
     return ExpandableNotifier(
@@ -351,9 +421,10 @@ class Card1 extends StatelessWidget {
             scrollOnExpand: true,
             scrollOnCollapse: false,
             child: ExpandablePanel(
-              theme:  ExpandableThemeData(
+              theme: ExpandableThemeData(
                 headerAlignment: ExpandablePanelHeaderAlignment.center,
-                iconColor: ShortMethods.giveColor(context, Colors.black, Colors.white),
+                iconColor:
+                    ShortMethods.giveColor(context, Colors.black, Colors.white),
                 tapBodyToCollapse: true,
               ),
               header: Padding(
@@ -363,7 +434,7 @@ class Card1 extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '1st Floor',
+                        this.currentFloor.floorName,
                         style: TextStyle(
                           fontSize: 18,
                         ),
@@ -371,7 +442,7 @@ class Card1 extends StatelessWidget {
                     ),
                     Container(
                       child: Text(
-                        12.toString(),
+                        this.currentFloor.roomsToCleans.toString(),
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
@@ -433,18 +504,33 @@ class Card1 extends StatelessWidget {
                       ),
                     ),
                   ),
-                  for (var _ in Iterable.generate(4))
+                  for (Room room in this.isCleanFilter
+                      ? this
+                          .currentFloor
+                          .rooms
+                          .where((e) => e.roomStatus != RoomStatus.cleaned)
+                          .toList()
+                      : this.currentFloor.rooms)
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       child: PInkWell(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          var tmpRoom = room;
+
+                          var somethingChanged = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CustomRoomDetail(),
+                                builder: (context) =>
+                                    CustomRoomDetail(room: tmpRoom),
                                 fullscreenDialog: true),
                           );
+                          if (somethingChanged != null) {
+                            if (somethingChanged == true) {
+                              this.reloadData();
+
+                            }
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -453,12 +539,12 @@ class Card1 extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: RoomFloor(
-                                  room: 'Room #22',
-                                  wing: 'Right Wing',
+                                  room: room.name,
+                                  wing: room.wingName,
                                 ),
                               ),
                               StatusView(
-                                status: RoomStatus.cleaned,
+                                status: room.roomStatus,
                               ),
                               NextIcon(),
                             ],

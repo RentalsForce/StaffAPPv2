@@ -1,4 +1,5 @@
 import 'package:bn_staff/core/colors.dart';
+import 'package:bn_staff/model/room_detail.dart';
 import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/button_close.dart';
 import 'package:bn_staff/widgets/elevated_button.dart';
@@ -17,6 +18,10 @@ import 'package:flutter/material.dart';
 import 'add_maintenance_request.dart';
 
 class ReplaceBrokenItem extends StatefulWidget {
+  RoomDetailModel model;
+
+  ReplaceBrokenItem({this.model});
+
   @override
   _ReplaceBrokenItemState createState() => _ReplaceBrokenItemState();
 }
@@ -24,6 +29,24 @@ class ReplaceBrokenItem extends StatefulWidget {
 class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
   int selectedIndex = 0;
   String customIssue;
+
+  List<Records> currentRecord;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //model
+
+    currentRecord = this
+        .widget
+        .model
+        .records
+        .where((e) => e.typeC == 'Replacement')
+        .toList();
+
+    print(currentRecord);
+  }
 
   final picker = ImagePicker();
   List<File> images = [];
@@ -89,28 +112,20 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
               spacing: 8.0, // gap between adjacent chips
               runSpacing: 4.0,
               children: [
-                ButtonClose(
-                  isSelected: selectedIndex == 0,
-                  name: 'Broken Light Bulb',
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                      _controller.text = '';
-                    });
-                  },
-                  onDeleteTap: () {},
-                ),
-                ButtonClose(
-                  isSelected: selectedIndex == 1,
-                  name: 'New Tissues',
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                      _controller.text = '';
-                    });
-                  },
-                  onDeleteTap: () {},
-                ),
+                for (int i = 0 ; i < currentRecord.length ; i++) ...[
+                  ButtonClose(
+                    isSelected: selectedIndex == i,
+                    name: currentRecord[i].name,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = i;
+                        _controller.text = '';
+                      });
+                    },
+                    onDeleteTap: () {},
+                  ),
+                ],
+
                 if (this.customIssue != null) ...[
                   ButtonClose(
                     isSelected: selectedIndex == 2,
@@ -142,7 +157,7 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
               maxLines: 1,
               style: TextStyle(
                 color:
-                ShortMethods.giveColor(context, Colors.black, Colors.white),
+                    ShortMethods.giveColor(context, Colors.black, Colors.white),
               ),
             ),
             SizedBox(
@@ -158,7 +173,7 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
               maxLines: null,
               style: TextStyle(
                 color:
-                ShortMethods.giveColor(context, Colors.black, Colors.white),
+                    ShortMethods.giveColor(context, Colors.black, Colors.white),
               ),
             ),
             SizedBox(
@@ -263,6 +278,3 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
     );
   }
 }
-
-
-

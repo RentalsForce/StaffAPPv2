@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class StatusView extends StatelessWidget {
   final RoomStatus status;
+  StatusView({ this.status});
 
-  StatusView({this.status = RoomStatus.dirty});
 
   @override
   Widget build(BuildContext context) {

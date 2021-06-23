@@ -74,8 +74,9 @@ Future<void> showProgressDialog(BuildContext context) {
   );
 }
 
-Future<void> showBottomSheit(BuildContext context, Widget widget) {
-  showModalBottomSheet(
+Future<dynamic> showBottomSheit(BuildContext context, Widget widget)async {
+
+  var check = await showModalBottomSheet(
     barrierColor: MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.grey.withOpacity(0.5)
         : Colors.black.withOpacity(0.5),
@@ -90,4 +91,15 @@ Future<void> showBottomSheit(BuildContext context, Widget widget) {
       ),
     ),
   );
+
+  if (check != null) {
+    print(check);
+
+    return check;
+  }
+
+  return null;
+
+
+
 }

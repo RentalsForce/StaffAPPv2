@@ -1,5 +1,7 @@
 import 'package:bn_staff/core/constants.dart';
 import 'package:bn_staff/model/room.dart';
+import 'package:bn_staff/model/room_detail.dart';
+import 'package:bn_staff/pages/room_detail.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -66,8 +68,6 @@ class LoginApiProvider {
 
 class RoomApiProvider {
   Future<void> getRooms(
-
-
       {Function successCallBack(result), Function failedCallBack}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -96,12 +96,67 @@ class RoomApiProvider {
     }
   }
 
+  Future<void> getTotalReported(
+      {Function successCallBack(result), Function failedCallBack}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var url =
+          'https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/query/?q=select+count()+from+room_report__c+where+status__c=' +
+              "'To Do'";
+
+      var tmp = prefs.getString(Config.SESSION_ID_KEY);
+
+      _dio.options.headers['Authorization'] = 'Bearer ' + tmp;
+
+      Response response = await _dio.get(
+        url,
+      );
+
+      successCallBack(response.data['totalSize']);
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+
+      failedCallBack.call();
+
+      //return UserResponse.withError("$error");
+    }
+  }
+
+  Future<void> getRoomReportDetails(String roomId,
+      {Function successCallBack(result), Function failedCallBack}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var url =
+          'https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/query/?q=select+id,Type__c,name,status__c,Photo__c+from+room_report__c+where+unit__c=' +
+              "'$roomId'";
+
+      var tmp = prefs.getString(Config.SESSION_ID_KEY);
+
+      _dio.options.headers['Authorization'] = 'Bearer ' + tmp;
+
+      Response response = await _dio.get(
+        url,
+      );
+
+      var rooms = RoomDetailModel.fromJson(response.data);
+
+      successCallBack(rooms);
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+
+      failedCallBack.call();
+
+      //return UserResponse.withError("$error");
+    }
+  }
+
   Future<void> changeRoomStatus(String recordId, RoomStatus newStautus,
       {Function successCallBack, Function failedCallBack}) async {
     try {
       var url =
-          'https://bntso2--teguh.my.salesforce.com/services/data/v51.0/sobjects/Unit__c/' +
+          'https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/sobjects/Unit__c/' +
               recordId;
+      //https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/sobjects/Unit__c/a0R7c0000088evYEAQ
 
       ResponseWrapper statusChange = ResponseWrapper(
         status: Room.roomString(newStautus),
@@ -120,8 +175,41 @@ class RoomApiProvider {
       print("Exception occured: $error stackTrace: $stacktrace");
 
       failedCallBack.call();
+    }
+  }
 
-      //return UserResponse.withError("$error");
+  Future<void> addNewRequest(
+      String recordId, String name, String detail, String photo, String type,
+      {Function successCallBack, Function failedCallBack}) async {
+    try {
+      var url =
+          'https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/sobjects/room_report__c/';
+
+      Request request = Request();
+      request.name = name;
+      request.descriptionC = detail;
+      request.unitC = recordId;
+      request.photoC = photo;
+      request.typeC = type;
+
+      print(request.toJson());
+      Response response = await _dio.patch(
+        url,
+        data: request.toJson(),
+      );
+
+      var result = Request.fromJson(response.data);
+
+      successCallBack(result);
+
+
+      return;
+
+      // return UserResponse.fromJson(response.data);
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+
+      failedCallBack.call();
     }
   }
 

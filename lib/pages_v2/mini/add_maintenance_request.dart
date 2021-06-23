@@ -11,8 +11,13 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:bn_staff/model/room_detail.dart';
 
 class AddMaintenanceRequest extends StatefulWidget {
+  RoomDetailModel model;
+
+  AddMaintenanceRequest({this.model});
+
   @override
   _AddMaintenanceRequestState createState() => _AddMaintenanceRequestState();
 }
@@ -23,6 +28,24 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
 
   final picker = ImagePicker();
   List<File> images = [];
+
+  List<Records> currentRecord;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //model
+
+    currentRecord = this
+        .widget
+        .model
+        .records
+        .where((e) => e.typeC == 'Maintenance')
+        .toList();
+
+    print(currentRecord);
+  }
 
   Future getImageFromGallery() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -84,28 +107,22 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
               spacing: 8.0, // gap between adjacent chips
               runSpacing: 4.0,
               children: [
-                ButtonClose(
-                  isSelected: selectedIndex == 0,
-                  name: 'Broken Light Bulb',
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                      _controller.text = '';
-                    });
-                  },
-                  onDeleteTap: () {},
-                ),
-                ButtonClose(
-                  isSelected: selectedIndex == 1,
-                  name: 'New Tissues',
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                      _controller.text = '';
-                    });
-                  },
-                  onDeleteTap: () {},
-                ),
+                for (int i = 0; i < currentRecord.length; i++) ...[
+
+                  ButtonClose(
+                    isSelected: selectedIndex == i,
+                    name: this.currentRecord[i].name,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = i;
+                        _controller.text = '';
+                      });
+                    },
+                    onDeleteTap: () {},
+                  ),
+
+                ],
+
                 if (this.customIssue != null) ...[
                   ButtonClose(
                     isSelected: selectedIndex == 2,
@@ -250,7 +267,6 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                 }
               },
               color: Color.fromRGBO(67, 128, 177, 1),
-//background: rgba(67, 128, 177, 1);
             ),
             SizedBox(
               height: 28,
