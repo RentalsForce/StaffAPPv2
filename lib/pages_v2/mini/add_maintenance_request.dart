@@ -1,4 +1,6 @@
 import 'package:bn_staff/core/colors.dart';
+import 'package:bn_staff/model/room.dart';
+import 'package:bn_staff/util/dio.dart';
 import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/button_close.dart';
 import 'package:bn_staff/widgets/elevated_button.dart';
@@ -7,6 +9,7 @@ import 'package:bn_staff/widgets/mini_card.dart';
 import 'package:bn_staff/widgets/mini_header_text.dart';
 import 'package:bn_staff/widgets/small_image_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,8 +18,10 @@ import 'package:bn_staff/model/room_detail.dart';
 
 class AddMaintenanceRequest extends StatefulWidget {
   RoomDetailModel model;
+  Room room;
+  final VoidCallback somethingWasChanged;
 
-  AddMaintenanceRequest({this.model});
+  AddMaintenanceRequest({this.model, this.room, this.somethingWasChanged});
 
   @override
   _AddMaintenanceRequestState createState() => _AddMaintenanceRequestState();
@@ -24,7 +29,8 @@ class AddMaintenanceRequest extends StatefulWidget {
 
 class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
   int selectedIndex = 0;
-  String customIssue;
+  String selectedDropDownIssue = '';
+  bool somethingNewAdded = false;
 
   final picker = ImagePicker();
   List<File> images = [];
@@ -108,7 +114,6 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
               runSpacing: 4.0,
               children: [
                 for (int i = 0; i < currentRecord.length; i++) ...[
-
                   ButtonClose(
                     isSelected: selectedIndex == i,
                     name: this.currentRecord[i].name,
@@ -120,25 +125,8 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                     },
                     onDeleteTap: () {},
                   ),
-
                 ],
 
-                if (this.customIssue != null) ...[
-                  ButtonClose(
-                    isSelected: selectedIndex == 2,
-                    name: 'Add Custom Issue',
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = 2;
-
-                        if (customIssue != null) {
-                          _controller.text = this.customIssue;
-                        }
-                      });
-                    },
-                    onDeleteTap: () {},
-                  ),
-                ],
               ],
             ),
             SizedBox(
@@ -163,17 +151,22 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
               ),
               validator: FormBuilderValidators.compose(
                   [FormBuilderValidators.required(context)]),
+              onChanged: (newValue) {
+                this.selectedDropDownIssue = newValue;
+              },
               items: ['Broken Light Bulb', 'New Tissues']
-                  .map((gender) => DropdownMenuItem(
-                        value: gender,
-                        child: Text(
-                          '$gender',
-                          style: TextStyle(
-                            color: ShortMethods.giveColor(
-                                context, Colors.black, Colors.white),
-                          ),
+                  .map(
+                    (gender) => DropdownMenuItem(
+                      value: gender,
+                      child: Text(
+                        '$gender',
+                        style: TextStyle(
+                          color: ShortMethods.giveColor(
+                              context, Colors.black, Colors.white),
                         ),
-                      ))
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
             SizedBox(
@@ -192,65 +185,70 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                     ShortMethods.giveColor(context, Colors.black, Colors.white),
               ),
             ),
-            SizedBox(
-              height: 16,
-            ),
-            buildText('Upload supporting images'),
-            SizedBox(
-              height: 4,
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
+
+            if (1 == 2) ... [
+              SizedBox(
+                height: 16,
               ),
-              onPressed: () {},
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextButton(
-                      icon: Icons.camera_alt_outlined,
-                      text: 'Capture Image',
-                      onTap: () {
-                        this.captureImage();
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: 16,
-                  ),
-                  Expanded(
-                    child: CustomTextButton(
-                      icon: Icons.image_outlined,
-                      text: 'Select from Gallery',
-                      onTap: () {
-                        getImageFromGallery();
-                      },
-                    ),
-                  ),
-                ],
+              buildText('Upload supporting images'),
+              SizedBox(
+                height: 4,
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (int i = 0; i < images.length; i++) ...[
-                    SmallImageView(
-                      index: i,
-                      file: images[i],
-                      onDelete: (index) {
-                        setState(() {
-                          images.removeAt(i);
-                        });
-                      },
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: () {},
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextButton(
+                        icon: Icons.camera_alt_outlined,
+                        text: 'Capture Image',
+                        onTap: () {
+                          this.captureImage();
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Expanded(
+                      child: CustomTextButton(
+                        icon: Icons.image_outlined,
+                        text: 'Select from Gallery',
+                        onTap: () {
+                          getImageFromGallery();
+                        },
+                      ),
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
+              SizedBox(
+                height: 16,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (int i = 0; i < images.length; i++) ...[
+                      SmallImageView(
+                        index: i,
+                        file: images[i],
+                        onDelete: (index) {
+                          setState(() {
+                            images.removeAt(i);
+                          });
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+
+
             SizedBox(
               height: 16,
             ),
@@ -259,10 +257,56 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
               onPressed: () {
                 FocusManager.instance.primaryFocus.unfocus();
 
+                //addNewRequest
                 if (_controller.text.length > 0) {
-                  setState(() {
-                    this.customIssue = _controller.text;
-                    _controller.text = '';
+                  EasyLoading.show(
+                    status: 'Adding Request',
+                  );
+                  RoomApiProvider().addNewRequest(
+                      this.widget.room.id,
+                      _controller.text,
+                      '',
+                      '',
+                      'Maintenance', successCallBack: (value) {
+                    this.somethingNewAdded = true;
+
+                    Records record = Records();
+                    record.name = _controller.text;
+                    record.id = value;
+                    setState(() {
+                      currentRecord.add(record);
+                      setState(() {
+                        _controller.text = '';
+                      });
+                    });
+
+                    this.widget.somethingWasChanged();
+
+                    EasyLoading.dismiss();
+                  }, failedCallBack: () {
+                    EasyLoading.dismiss();
+                    EasyLoading.showToast('Error while adding Request');
+                  });
+
+
+                } else if (selectedDropDownIssue.length > 0) {
+                  EasyLoading.show(
+                    status: 'Adding Request',
+                  );
+                  RoomApiProvider().addNewRequest(
+                      this.widget.room.id, selectedDropDownIssue, '', '',
+                      'Maintenance', successCallBack: (value) {
+                    Records record = Records();
+                    record.name = selectedDropDownIssue;record.id = value;
+                    setState(() {
+                      currentRecord.add(record);
+                    });
+                    this.widget.somethingWasChanged();
+                    EasyLoading.dismiss();
+                    this.somethingNewAdded = true;
+                  }, failedCallBack: () {
+                    EasyLoading.dismiss();
+                    EasyLoading.showToast('Error while adding Request');
                   });
                 }
               },
@@ -271,6 +315,7 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
             SizedBox(
               height: 28,
             ),
+            /*
             PElevatedButton(
               text: 'Save',
               onPressed: () {
@@ -278,6 +323,7 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
               },
 //background: rgba(67, 128, 177, 1);
             ),
+         */
           ],
         ),
       ),

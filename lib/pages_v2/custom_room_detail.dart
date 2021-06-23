@@ -37,13 +37,10 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
     return DirtyView();
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    //getRoomReportDetails
+  void loadData() {
     RoomApiProvider().getRoomReportDetails(this.widget.room.id,
         successCallBack: (result) {
+      this.somethingChanged = false;
       setState(
         () {
           model = result;
@@ -51,6 +48,14 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
       );
       return;
     }, failedCallBack: () {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //getRoomReportDetails
+    this.loadData();
   }
 
   @override
@@ -175,24 +180,42 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
                   ),
                   ListItem(
                     title: 'Replace Broken Item',
-                    onTap: () {
-                      showBottomSheit(
+                    onTap: () async {
+                      var c = await showBottomSheit(
                         context,
                         ReplaceBrokenItem(
                           model: this.model,
+                          room: this.widget.room,
+                          somethingWasChanged: () {
+                            this.somethingChanged = true;
+                          },
                         ),
                       );
+
+                      print(c);
+                      if (somethingChanged) {
+                        this.loadData();
+                      }
                     },
                   ),
                   ListItem(
                     title: 'Add Maintenance Request ',
-                    onTap: () {
-                      showBottomSheit(
+                    onTap: () async {
+                      var c = await showBottomSheit(
                         context,
                         AddMaintenanceRequest(
-                          model : this.model
+                          model: this.model,
+                          room: this.widget.room,
+                          somethingWasChanged: () {
+                            this.somethingChanged = true;
+                          },
                         ),
                       );
+
+                      print(c);
+                      if (somethingChanged) {
+                        this.loadData();
+                      }
                     },
                   ),
                 ],

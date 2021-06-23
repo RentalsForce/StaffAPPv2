@@ -193,15 +193,19 @@ class RoomApiProvider {
       request.typeC = type;
 
       print(request.toJson());
-      Response response = await _dio.patch(
+      Response response = await _dio.post(
         url,
         data: request.toJson(),
       );
 
-      var result = Request.fromJson(response.data);
+      var item = response.data['success'];
 
-      successCallBack(result);
 
+      if (item == true) {
+        successCallBack(response.data['id'].toString());
+      } else {
+        failedCallBack.call();
+      }
 
       return;
 

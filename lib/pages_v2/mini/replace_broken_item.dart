@@ -1,5 +1,7 @@
 import 'package:bn_staff/core/colors.dart';
+import 'package:bn_staff/model/room.dart';
 import 'package:bn_staff/model/room_detail.dart';
+import 'package:bn_staff/util/dio.dart';
 import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/button_close.dart';
 import 'package:bn_staff/widgets/elevated_button.dart';
@@ -8,6 +10,7 @@ import 'package:bn_staff/widgets/mini_card.dart';
 import 'package:bn_staff/widgets/mini_header_text.dart';
 import 'package:bn_staff/widgets/small_image_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,8 +22,11 @@ import 'add_maintenance_request.dart';
 
 class ReplaceBrokenItem extends StatefulWidget {
   RoomDetailModel model;
+  Room room;
 
-  ReplaceBrokenItem({this.model});
+  final VoidCallback somethingWasChanged;
+
+  ReplaceBrokenItem({this.model,this.room,this.somethingWasChanged});
 
   @override
   _ReplaceBrokenItemState createState() => _ReplaceBrokenItemState();
@@ -28,7 +34,7 @@ class ReplaceBrokenItem extends StatefulWidget {
 
 class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
   int selectedIndex = 0;
-  String customIssue;
+  bool somethingNewAdded = false;
 
   List<Records> currentRecord;
 
@@ -126,22 +132,7 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
                   ),
                 ],
 
-                if (this.customIssue != null) ...[
-                  ButtonClose(
-                    isSelected: selectedIndex == 2,
-                    name: 'Add Custom Issue',
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = 2;
 
-                        if (customIssue != null) {
-                          _controller.text = this.customIssue;
-                        }
-                      });
-                    },
-                    onDeleteTap: () {},
-                  ),
-                ],
               ],
             ),
             SizedBox(
@@ -179,81 +170,122 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
             SizedBox(
               height: 16,
             ),
-            buildText('Upload supporting images'),
-            SizedBox(
-              height: 4,
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
+            if (1 == 2) ... [
+              buildText('Upload supporting images'),
+              SizedBox(
+                height: 4,
               ),
-              onPressed: () {},
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextButton(
-                      icon: Icons.camera_alt_outlined,
-                      text: 'Capture Image',
-                      onTap: () {
-                        this.captureImage();
-                      },
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: () {},
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextButton(
+                        icon: Icons.camera_alt_outlined,
+                        text: 'Capture Image',
+                        onTap: () {
+                          this.captureImage();
+                        },
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 16,
-                  ),
-                  Expanded(
-                    child: CustomTextButton(
-                      icon: Icons.image_outlined,
-                      text: 'Select from Gallery',
-                      onTap: () {
-                        getImageFromGallery();
-                      },
+                    SizedBox(
+                      width: 16,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (int i = 0; i < images.length; i++) ...[
-                    SmallImageView(
-                      index: i,
-                      file: images[i],
-                      onDelete: (index) {
-                        setState(() {
-                          images.removeAt(i);
-                        });
-                      },
+                    Expanded(
+                      child: CustomTextButton(
+                        icon: Icons.image_outlined,
+                        text: 'Select from Gallery',
+                        onTap: () {
+                          getImageFromGallery();
+                        },
+                      ),
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
+              SizedBox(
+                height: 16,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (int i = 0; i < images.length; i++) ...[
+                      SmallImageView(
+                        index: i,
+                        file: images[i],
+                        onDelete: (index) {
+                          setState(() {
+                            images.removeAt(i);
+                          });
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+            ],
+
             PElevatedButton(
               text: 'Add Damage Item',
               onPressed: () {
                 FocusManager.instance.primaryFocus.unfocus();
 
-                if (_controller.text.length > 0) {
-                  setState(() {
-                    this.customIssue = _controller.text;
-                    _controller.text = '';
+
+
+
+                if (_nameController.text.length > 0) {
+                  EasyLoading.show(
+                    status: 'Adding Request',
+                  );
+                  RoomApiProvider().addNewRequest(
+                      this.widget.room.id,
+                      _nameController.text,
+                      _controller.text,
+                      '',
+                      'Replacement', successCallBack: (value) {
+                    this.somethingNewAdded = true;
+
+                    Records record = Records();
+                    record.name = _nameController.text;
+                    //record.des = _controller.text;
+                    record.id = value;
+
+                    setState(() {
+                      currentRecord.add(record);
+                      setState(() {
+                        _controller.text = '';
+                        _nameController.text = '';
+
+                      });
+                    });
+
+                    this.widget.somethingWasChanged();
+
+                    EasyLoading.dismiss();
+                  }, failedCallBack: () {
+                    EasyLoading.dismiss();
+                    EasyLoading.showToast('Error while adding Request');
                   });
+
+
                 }
+
+
+
+
               },
               color: Color.fromRGBO(67, 128, 177, 1),
 //background: rgba(67, 128, 177, 1);
             ),
-            SizedBox(
+
+            /*SizedBox(
               height: 28,
             ),
             PElevatedButton(
@@ -263,6 +295,8 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
               },
 //background: rgba(67, 128, 177, 1);
             ),
+            */
+
           ],
         ),
       ),

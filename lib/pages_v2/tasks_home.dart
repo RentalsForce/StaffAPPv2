@@ -227,7 +227,7 @@ class _TasksHomeState extends State<TasksHome>
                                           child: this.totalReportedHomes == 0
                                               ? Container()
                                               : MiniCardInfo(
-                                                  label: 'Reported',
+                                                  label: 'To-Do',
                                                   count:
                                                       this.totalReportedHomes,
                                                 ),
