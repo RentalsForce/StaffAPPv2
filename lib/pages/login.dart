@@ -1,6 +1,6 @@
 import 'package:bn_staff/bloc/login/login_bloc.dart';
 import 'package:bn_staff/core/colors.dart';
-import 'package:bn_staff/pages/tasks.dart';
+import 'package:bn_staff/pages_v2/tasks_home.dart';
 import 'package:bn_staff/util/dio.dart';
 import 'package:bn_staff/widgets/elevated_button.dart';
 import 'package:flutter/material.dart';
@@ -47,18 +47,24 @@ class _LoginViewState extends State<LoginView> {
                 EasyLoading.showToast('Loaded in successfully');
                 alreadyInProgress = false;
                 Route route = MaterialPageRoute(
-                  builder: (context) => Tasks(),
+                  builder: (context) => TasksHome(),
                 );
                 Navigator.pushReplacement(context, route);
               } else if (state is LoginLoaing) {
                 EasyLoading.show(
                   status: 'loading...',
                 );
+              } else if (state is LoginErrorState) {
+                alreadyInProgress = false;
+
+                EasyLoading.showToast(
+                  'Invalid Credential entered',
+                );
               }
             },
             child: BlocBuilder<LoginBloc, LoginState>(
               builder: (context, state) {
-                if (state is InitialLoginState) {
+                if (state is InitialLoginState || state is LoginErrorState) {
                   return Column(
                     children: [
                       Image(
@@ -129,9 +135,7 @@ class _LoginViewState extends State<LoginView> {
                         child: PElevatedButton(
                           text: 'LOG IN',
                           onPressed: () {
-                            if (alreadyInProgress) {
-                              return;
-                            }
+
                             bool flag = true;
 
                             if (controllerEmail.value.text.isEmpty) {

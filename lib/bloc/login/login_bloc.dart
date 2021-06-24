@@ -10,7 +10,6 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-
   LoginBloc(InitialLoginState initialLoginState) : super(InitialLoginState());
 
   @override
@@ -25,18 +24,26 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             (event as LoginButtonTapped).isTest);
         SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        var c = result.data['session_id'];
+        var data = result.data;
 
-        await prefs.setString(Config.SESSION_ID_KEY, c);
-        await prefs.setString(
-            Config.SESSION_USERNAME_KEY, (event as LoginButtonTapped).username);
-        await prefs.setString(
-            Config.SESSION_PASSWORD_KEY, (event as LoginButtonTapped).password);
-        await prefs.setBool(
-            Config.SESSION_IS_TEST_KEY, (event as LoginButtonTapped).isTest);
+        if (data['status'] == 0) {
+          print('Error');
+          yield LoginErrorState('Invalid Credentials Entered');;
+        }
+        else {
+          var c = result.data['session_id'];
 
+          await prefs.setString(Config.SESSION_ID_KEY, c);
+          await prefs.setString(
+              Config.SESSION_USERNAME_KEY, (event as LoginButtonTapped).username);
+          await prefs.setString(
+              Config.SESSION_PASSWORD_KEY, (event as LoginButtonTapped).password);
+          await prefs.setBool(
+              Config.SESSION_IS_TEST_KEY, (event as LoginButtonTapped).isTest);
 
-        yield LoginSuccess();
+          yield LoginSuccess();
+        }
+
       }
     } catch (e) {
       yield LoginErrorState(e.toString());

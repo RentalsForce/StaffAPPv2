@@ -8,7 +8,6 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants.dart';
 import '../pages/login.dart';
-import '../pages/tasks.dart';
 
 class InitialLoader extends StatefulWidget {
   @override
@@ -88,7 +87,7 @@ class _InitialLoaderState extends State<InitialLoader>
 
   void moveToNextView() {
     Future.delayed(const Duration(seconds: 1), () {
-      MutualActions.goToView(Tasks(), context);
+      MutualActions.goToView(TasksHome(), context);
     });
   }
 
