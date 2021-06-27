@@ -21,7 +21,7 @@ ThemeData getAppTheme(BuildContext context) {
     fontFamily: 'Roboto',
     appBarTheme: AppBarTheme(
       centerTitle: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
       textTheme: Theme.of(context).textTheme,

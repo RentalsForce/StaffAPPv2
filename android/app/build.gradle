@@ -33,25 +33,19 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     compileSdkVersion 30
-
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.bn_staff"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode 1
+        versionName "1.0.0"
     }
-
-
-
-
 
     buildTypes {
         release {
             signingConfig signingConfigs.debug
         }
-
     }
 }
 

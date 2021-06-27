@@ -15,13 +15,13 @@ Future<bool> showConfirmationDialog(
     builder: (_) => AlertDialog(
       title: title != null ? Text(title) : null,
       content: Text(
-        'General_Are_You_Sure',
+        message,
       ),
       actions: [
         if (showNegativeBtn)
           TextButton(
             child: Text(
-              'General_No',
+              negativeBtnText,
             ),
             onPressed: () => Navigator.pop(context, false),
           ),

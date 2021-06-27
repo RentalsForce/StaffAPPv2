@@ -156,7 +156,6 @@ class RoomApiProvider {
       var url =
           'https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/sobjects/Unit__c/' +
               recordId;
-      //https://bntso2--syafiq.my.salesforce.com/services/data/v51.0/sobjects/Unit__c/a0R7c0000088evYEAQ
 
       ResponseWrapper statusChange = ResponseWrapper(
         status: Room.roomString(newStautus),
@@ -167,6 +166,35 @@ class RoomApiProvider {
 
       print(response.data);
       successCallBack([]);
+
+      return;
+
+      // return UserResponse.fromJson(response.data);
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+
+      failedCallBack.call();
+    }
+  }
+
+  Future<void> deleteMaintainenceItem(String recordId,
+      {Function successCallBack, Function failedCallBack}) async {
+    try {
+      var url =
+          'https://bntso2--syafiq.my.salesforce.com/services/data/v52.0/sobjects/room_report__c/' +
+              recordId;
+
+
+      Response response = await _dio.delete(url);
+
+      if (response.statusCode == 204) {
+        successCallBack();
+      }
+      else {
+        failedCallBack.call();
+
+      }
+
 
       return;
 
@@ -199,7 +227,6 @@ class RoomApiProvider {
       );
 
       var item = response.data['success'];
-
 
       if (item == true) {
         successCallBack(response.data['id'].toString());

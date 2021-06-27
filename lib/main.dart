@@ -9,6 +9,12 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 void main() {
   configLoading();
 
+  void main() {
+
+
+
+  }
+
   runApp(MyApp());
 }
 
@@ -35,6 +41,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Booking Ninja',
+      debugShowCheckedModeBanner: false,
       theme: getAppTheme(context),
       darkTheme: getAppThemeDark(context),
       builder: EasyLoading.init(),

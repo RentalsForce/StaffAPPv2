@@ -1,5 +1,6 @@
 import 'package:bn_staff/core/colors.dart';
 import 'package:bn_staff/model/room.dart';
+import 'package:bn_staff/util/dialog_utils.dart';
 import 'package:bn_staff/util/dio.dart';
 import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/button_close.dart';
@@ -35,7 +36,54 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
   final picker = ImagePicker();
   List<File> images = [];
 
+  bool buttonEnabled = true;
+
   List<Records> currentRecord;
+
+  void deleteActionTapped(int i) async {
+    bool didAccept = await showConfirmationDialog(context,
+        message: 'That you want to delete this Maintenance Request',
+        title: 'Are you sure.',
+        positiveBtnText: 'Yes',
+        negativeBtnText: 'Cancel');
+
+    if (didAccept) {
+      setState(() {
+        this.buttonEnabled = false;
+      });
+
+      var item = this.currentRecord[i];
+
+      RoomApiProvider().deleteMaintainenceItem(
+        item.id,
+        successCallBack: () {
+          setState(
+            () {
+
+              this.currentRecord.removeAt(i);
+
+              this.somethingNewAdded = true;
+
+              this.buttonEnabled = true;
+            },
+          );
+        },
+        failedCallBack: () {
+          EasyLoading.showError(
+              'Error while removing record');
+          setState(
+            () {
+
+              this.buttonEnabled = true;
+
+            },
+          );
+        },
+      );
+    }
+
+    //
+  }
 
   @override
   void initState() {
@@ -109,26 +157,36 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                 height: 16,
               ),
             ],
-            Wrap(
-              spacing: 8.0, // gap between adjacent chips
-              runSpacing: 4.0,
-              children: [
-                for (int i = 0; i < currentRecord.length; i++) ...[
-                  ButtonClose(
-                    isSelected: selectedIndex == i,
-                    name: this.currentRecord[i].name,
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = i;
-                        _controller.text = '';
-                      });
-                    },
-                    onDeleteTap: () {},
-                  ),
+            if (this.buttonEnabled) ...[
+              Wrap(
+                spacing: 8.0, // gap between adjacent chips
+                runSpacing: 4.0,
+                children: [
+                  for (int i = 0; i < currentRecord.length; i++) ...[
+                    ButtonClose(
+                      isSelected: selectedIndex == i,
+                      name: this.currentRecord[i].name,
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = i;
+                          _controller.text = '';
+                        });
+                      },
+                      onDeleteTap: () {
+                        deleteActionTapped(i);
+                      },
+                    ),
+                  ],
                 ],
-
-              ],
-            ),
+              ),
+            ] else ...[
+              Container(
+                height: 80,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ],
             SizedBox(
               height: 16,
             ),
@@ -185,8 +243,7 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                     ShortMethods.giveColor(context, Colors.black, Colors.white),
               ),
             ),
-
-            if (1 == 2) ... [
+            if (1 == 2) ...[
               SizedBox(
                 height: 16,
               ),
@@ -247,14 +304,24 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                 ),
               ),
             ],
-
-
             SizedBox(
               height: 16,
             ),
             PElevatedButton(
+
               text: 'Add Issue',
-              onPressed: () {
+              onPressed:
+                  ()
+              {
+
+                if (!this.buttonEnabled) {
+
+                  print('Button is disabled');
+
+                  return;
+
+
+                }
                 FocusManager.instance.primaryFocus.unfocus();
 
                 //addNewRequest
@@ -287,17 +354,19 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                     EasyLoading.dismiss();
                     EasyLoading.showToast('Error while adding Request');
                   });
-
-
                 } else if (selectedDropDownIssue.length > 0) {
                   EasyLoading.show(
                     status: 'Adding Request',
                   );
                   RoomApiProvider().addNewRequest(
-                      this.widget.room.id, selectedDropDownIssue, '', '',
+                      this.widget.room.id,
+                      selectedDropDownIssue,
+                      '',
+                      '',
                       'Maintenance', successCallBack: (value) {
                     Records record = Records();
-                    record.name = selectedDropDownIssue;record.id = value;
+                    record.name = selectedDropDownIssue;
+                    record.id = value;
                     setState(() {
                       currentRecord.add(record);
                     });
@@ -310,6 +379,9 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
                   });
                 }
               },
+
+
+
               color: Color.fromRGBO(67, 128, 177, 1),
             ),
             SizedBox(
