@@ -52,6 +52,10 @@ class _AddMaintenanceRequestState extends State<AddMaintenanceRequest> {
         this.buttonEnabled = false;
       });
 
+      this.widget.somethingWasChanged();
+
+
+
       var item = this.currentRecord[i];
 
       RoomApiProvider().deleteMaintainenceItem(

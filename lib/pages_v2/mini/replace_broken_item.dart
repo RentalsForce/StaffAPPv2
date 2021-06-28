@@ -1,6 +1,7 @@
 import 'package:bn_staff/core/colors.dart';
 import 'package:bn_staff/model/room.dart';
 import 'package:bn_staff/model/room_detail.dart';
+import 'package:bn_staff/util/dialog_utils.dart';
 import 'package:bn_staff/util/dio.dart';
 import 'package:bn_staff/util/short_methods.dart';
 import 'package:bn_staff/widgets/button_close.dart';
@@ -26,7 +27,7 @@ class ReplaceBrokenItem extends StatefulWidget {
 
   final VoidCallback somethingWasChanged;
 
-  ReplaceBrokenItem({this.model,this.room,this.somethingWasChanged});
+  ReplaceBrokenItem({this.model, this.room, this.somethingWasChanged});
 
   @override
   _ReplaceBrokenItemState createState() => _ReplaceBrokenItemState();
@@ -35,6 +36,51 @@ class ReplaceBrokenItem extends StatefulWidget {
 class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
   int selectedIndex = 0;
   bool somethingNewAdded = false;
+
+  bool buttonEnabled = true;
+
+  void deleteActionTapped(int i) async {
+    bool didAccept = await showConfirmationDialog(context,
+        message: 'That you want to delete this Replacement Request',
+        title: 'Are you sure.',
+        positiveBtnText: 'Yes',
+        negativeBtnText: 'Cancel');
+
+    if (didAccept) {
+      setState(() {
+        this.buttonEnabled = false;
+      });
+
+      this.widget.somethingWasChanged();
+
+      var item = this.currentRecord[i];
+
+      RoomApiProvider().deleteMaintainenceItem(
+        item.id,
+        successCallBack: () {
+          setState(
+            () {
+              this.currentRecord.removeAt(i);
+
+              this.somethingNewAdded = true;
+
+              this.buttonEnabled = true;
+            },
+          );
+        },
+        failedCallBack: () {
+          EasyLoading.showError('Error while removing record');
+          setState(
+            () {
+              this.buttonEnabled = true;
+            },
+          );
+        },
+      );
+    }
+
+    //
+  }
 
   List<Records> currentRecord;
 
@@ -114,27 +160,36 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
                 height: 16,
               ),
             ],
-            Wrap(
-              spacing: 8.0, // gap between adjacent chips
-              runSpacing: 4.0,
-              children: [
-                for (int i = 0 ; i < currentRecord.length ; i++) ...[
-                  ButtonClose(
-                    isSelected: selectedIndex == i,
-                    name: currentRecord[i].name,
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = i;
-                        _controller.text = '';
-                      });
-                    },
-                    onDeleteTap: () {},
-                  ),
+            if (this.buttonEnabled) ...[
+              Wrap(
+                spacing: 8.0, // gap between adjacent chips
+                runSpacing: 4.0,
+                children: [
+                  for (int i = 0; i < currentRecord.length; i++) ...[
+                    ButtonClose(
+                      isSelected: selectedIndex == i,
+                      name: currentRecord[i].name,
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = i;
+                          _controller.text = '';
+                        });
+                      },
+                      onDeleteTap: () {
+                        deleteActionTapped(i);
+                      },
+                    ),
+                  ],
                 ],
-
-
-              ],
-            ),
+              ),
+            ] else ...[
+              Container(
+                height: 80,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ],
             SizedBox(
               height: 16,
             ),
@@ -170,7 +225,7 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
             SizedBox(
               height: 16,
             ),
-            if (1 == 2) ... [
+            if (1 == 2) ...[
               buildText('Upload supporting images'),
               SizedBox(
                 height: 4,
@@ -231,58 +286,52 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
                 height: 20,
               ),
             ],
-
             PElevatedButton(
               text: 'Add Damage Item',
               onPressed: () {
+                if (!this.buttonEnabled) {
+                  return;
+                }
                 FocusManager.instance.primaryFocus.unfocus();
-
-
-
 
                 if (_nameController.text.length > 0) {
                   EasyLoading.show(
                     status: 'Adding Request',
                   );
                   RoomApiProvider().addNewRequest(
-                      this.widget.room.id,
-                      _nameController.text,
-                      _controller.text,
-                      '',
-                      'Replacement', successCallBack: (value) {
-                    this.somethingNewAdded = true;
+                    this.widget.room.id,
+                    _nameController.text,
+                    _controller.text,
+                    '',
+                    'Replacement',
+                    successCallBack: (value) {
+                      this.somethingNewAdded = true;
 
-                    Records record = Records();
-                    record.name = _nameController.text;
-                    //record.des = _controller.text;
-                    record.id = value;
+                      Records record = Records();
+                      record.name = _nameController.text;
+                      //record.des = _controller.text;
+                      record.id = value;
 
-                    setState(() {
-                      currentRecord.add(record);
                       setState(() {
-                        _controller.text = '';
-                        _nameController.text = '';
-
+                        currentRecord.add(record);
+                        setState(() {
+                          _controller.text = '';
+                          _nameController.text = '';
+                        });
                       });
-                    });
 
-                    this.widget.somethingWasChanged();
+                      this.widget.somethingWasChanged();
 
-                    EasyLoading.dismiss();
-                  }, failedCallBack: () {
-                    EasyLoading.dismiss();
-                    EasyLoading.showToast('Error while adding Request');
-                  });
-
-
+                      EasyLoading.dismiss();
+                    },
+                    failedCallBack: () {
+                      EasyLoading.dismiss();
+                      EasyLoading.showToast('Error while adding Request');
+                    },
+                  );
                 }
-
-
-
-
               },
               color: Color.fromRGBO(67, 128, 177, 1),
-//background: rgba(67, 128, 177, 1);
             ),
 
             /*SizedBox(
@@ -296,7 +345,6 @@ class _ReplaceBrokenItemState extends State<ReplaceBrokenItem> {
 //background: rgba(67, 128, 177, 1);
             ),
             */
-
           ],
         ),
       ),

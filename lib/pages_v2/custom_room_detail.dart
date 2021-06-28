@@ -120,7 +120,7 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
               SizedBox(
                 height: 8,
               ),
-              if (model == null) ...[
+              if (model == null || somethingChanged) ...[
                 SizedBox(
                   height: 50,
                   width: 50,
@@ -158,21 +158,24 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
                             status: 'loading...',
                           );
                           //here
-                          RoomApiProvider()
-                              .changeRoomStatus(this.widget.room.id, status,
-                                  successCallBack: (result) {
-                            EasyLoading.dismiss();
+                          RoomApiProvider().changeRoomStatus(
+                            this.widget.room.id,
+                            status,
+                            successCallBack: (result) {
+                              EasyLoading.dismiss();
 
-                            this.somethingChanged = true;
+                              somethingChanged = true;
 
-                            Navigator.pop(context, true);
+                              Navigator.pop(context, true);
 
-                            return;
-                          }, failedCallBack: () {
-                            EasyLoading.dismiss();
-                            EasyLoading.showError(
-                                'Error while changing Status');
-                          });
+                              return;
+                            },
+                            failedCallBack: () {
+                              EasyLoading.dismiss();
+                              EasyLoading.showError(
+                                  'Error while changing Status');
+                            },
+                          );
                         }
                       }
                       //EditBulk
@@ -211,11 +214,8 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
                           },
                         ),
                       );
-
-                      print(c);
-                      if (somethingChanged) {
-                        this.loadData();
-                      }
+                      this.somethingChanged = true;
+                      this.loadData();
                     },
                   ),
                 ],
@@ -299,5 +299,3 @@ class TopLabelsControl extends StatelessWidget {
     );
   }
 }
-
-//
